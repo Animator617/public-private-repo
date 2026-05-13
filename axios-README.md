@@ -23,3 +23,5 @@ sudo ./axios-scan.sh
 # then check the dependencys against the curroped one
 echo "Check the shown dependecy versions of axios against the version that is compromised is the on under it you are fucked then you need to re doo alllll you lokin tokens and credentials and basically everythin"
 ```
+# Flags:
+--show-all sogt dafür das alle gefundenen dateien ezeigt werden und denn auch angezeigt wird wenn da kein axioy gefunden wurde
