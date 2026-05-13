@@ -31,19 +31,34 @@ echo -e "   ${RED}Suche nach: axios@1.14.1 / axios@0.30.4${NC}"
 echo "========================================="
 
 echo ""
-echo -e "${BOLD}📦 [1/3] package.json (deklarierte Versionen)${NC}"
+echo -e "${BOLD}🔒 [2/3] package-lock.json (installierte Versionen)${NC}"
 echo "-------------------------------------------------"
-find / -name "package.json" \
-  -not -path "*/node_modules/axios/*" \
+find / -name "package-lock.json" \
   -not -path "*/.git/*" \
   2>/dev/null \
   | while read f; do
-    version=$(grep -E '"axios"\s*:\s*"' "$f" 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-    if [ -n "$version" ]; then
-      check_version "$version" "$f"
+    echo -e "${YELLOW}  Prüfe: $f${NC}"  # <-- zeigt jede gefundene Datei
+
+    # npm v7+ Format
+    versions=$(grep -A3 '"node_modules/axios"' "$f" 2>/dev/null \
+      | grep '"version"' \
+      | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+
+    # npm v6 Format (Fallback)
+    if [ -z "$versions" ]; then
+      versions=$(grep -A2 '"axios"' "$f" 2>/dev/null \
+        | grep '"version"' \
+        | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+    fi
+
+    if [ -n "$versions" ]; then
+      echo "$versions" | while read version; do
+        check_version "$version" "$f"
+      done
+    else
+      echo -e "    ${YELLOW}⚠️  axios nicht in dieser Datei gefunden${NC}"
     fi
   done
-
 echo ""
 echo -e "${BOLD}🔒 [2/3] package-lock.json (installierte Versionen)${NC}"
 echo "-------------------------------------------------"
