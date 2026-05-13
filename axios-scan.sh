@@ -11,6 +11,14 @@ BOLD='\033[1m'
 
 INFECTED_COUNT=0
 TOTAL_FILES=0
+SHOW_ALL=false
+
+# Flag prüfen
+for arg in "$@"; do
+  if [ "$arg" = "--show-all" ]; then
+    SHOW_ALL=true
+  fi
+done
 
 check_version() {
   local version="$1"
@@ -33,11 +41,9 @@ scan_file() {
   local versions=""
 
   if [ "$type" = "package-lock" ]; then
-    # npm v7+ Format
     versions=$(grep -A3 '"node_modules/axios"' "$f" 2>/dev/null \
       | grep '"version"' \
       | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-    # npm v6 Fallback
     if [ -z "$versions" ]; then
       versions=$(grep -A2 '"axios"' "$f" 2>/dev/null \
         | grep '"version"' \
@@ -60,7 +66,9 @@ scan_file() {
       check_version "$version" "$f"
     done
   else
-    echo -e "    ${GREEN}✅ OK: no axios${NC} → $f"
+    if [ "$SHOW_ALL" = true ]; then
+      echo -e "    ${GREEN}✅ OK: no axios${NC} → $f"
+    fi
   fi
 }
 
@@ -68,6 +76,9 @@ echo ""
 echo -e "${BOLD}=========================================${NC}"
 echo -e "${BOLD}        AXIOS SECURITY SCAN              ${NC}"
 echo -e "${RED}${BOLD}  Prüfe auf: axios@1.14.1 / axios@0.30.4 ${NC}"
+if [ "$SHOW_ALL" = true ]; then
+  echo -e "${YELLOW}  Modus: --show-all (zeigt alle Dateien)${NC}"
+fi
 echo -e "${BOLD}=========================================${NC}"
 
 # ─────────────────────────────────────────
@@ -119,7 +130,3 @@ else
 fi
 echo -e "${BOLD}=========================================${NC}"
 echo ""
-
-
-
-
