@@ -25,3 +25,11 @@ echo "Check the shown dependecy versions of axios against the version that is co
 ```
 # Flags:
 --show-all sogt dafür das alle gefundenen dateien ezeigt werden und denn auch angezeigt wird wenn da kein axioy gefunden wurde
+
+# Am ende noch mal ausführen das zeigt welche versionen im system gerade isntalliert sind
+```bash
+# Findet tatsächlich installierte axios Pakete
+find / -path "*/node_modules/axios/package.json" 2>/dev/null \
+  | xargs grep '"version"' 2>/dev/null \
+  | grep -oE '[0-9]+\.[0-9]+\.[0-9]+'| sort -u
+```
